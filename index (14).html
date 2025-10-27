@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Mensajes Comerciales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            background: linear-gradient(45deg, #1a2a6c, #b21f1f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button i {
+            font-size: 18px;
+        }
+        
+        #comercialBtn {
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+        
+        #creadorBtn {
+            background: linear-gradient(45deg, #2196F3, #0D47A1);
+            color: white;
+        }
+        
+        #promoPanaBtn {
+            background: linear-gradient(45deg, #9C27B0, #6A1B9A);
+            color: white;
+        }
+        
+        #saldoBtn {
+            background: linear-gradient(45deg, #FF5722, #D84315);
+            color: white;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        
+        .message-container {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+            white-space: pre-line;
+            line-height: 1.6;
+            display: none;
+            max-height: 500px;
+            overflow-y: auto;
+            border-left: 5px solid #4CAF50;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+        }
+        
+        .copy-btn {
+            background: linear-gradient(45deg, #FF9800, #EF6C00);
+            color: white;
+            margin-top: 20px;
+            padding: 12px 25px;
+            width: 100%;
+            font-size: 18px;
+        }
+        
+        .success-message {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+            font-size: 18px;
+            padding: 10px;
+            background-color: #E8F5E9;
+            border-radius: 5px;
+            border: 1px solid #4CAF50;
+        }
+        
+        .message-header {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #b21f1f;
+            font-size: 20px;
+        }
+        
+        .rechazada-text {
+            color: #D84315;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #FFEBEE;
+            border-radius: 5px;
+            border: 1px solid #D84315;
+        }
+        
+        .resumen-text {
+            color: #B71C1C;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #FFCDD2;
+            border-radius: 5px;
+            border: 2px solid #D32F2F;
+            font-size: 16px;
+        }
+        
+        .datos-servicio {
+            background-color: #FFF3E0;
+            border-left: 4px solid #FF9800;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        /* Estilos para el modal de saldo insuficiente */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .modal-title {
+            font-size: 22px;
+            color: #D84315;
+            font-weight: bold;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #777;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        .example-text {
+            font-size: 12px;
+            color: #2196F3;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(45deg, #D84315, #BF360C);
+            color: white;
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 600px) {
+            .button-container {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-bullhorn"></i> Generador de Mensajes Comerciales</h1>
+        
+        <div class="button-container">
+            <button id="comercialBtn">
+                <i class="fas fa-shopping-cart"></i> MENSAJE COMERCIALIZAR
+            </button>
+            <button id="creadorBtn">
+                <i class="fas fa-edit"></i> CREADOR DE MENSAJE
+            </button>
+            <button id="promoPanaBtn">
+                <i class="fas fa-fire"></i> PROMO PANA
+            </button>
+            <button id="saldoBtn">
+                <i class="fas fa-exclamation-triangle"></i> SALDO INSUFICIENTE
+            </button>
+        </div>
+        
+        <div id="messageContainer" class="message-container"></div>
+        
+        <button id="copyBtn" class="copy-btn" style="display: none;">
+            <i class="fas fa-copy"></i> COPIAR MENSAJE
+        </button>
+        
+        <div id="successMessage" class="success-message">
+            <i class="fas fa-check-circle"></i> ¡Mensaje copiado al portapapeles!
+        </div>
+    </div>
+
+    <!-- Modal para Saldo Insuficiente -->
+    <div id="saldoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-exclamation-circle"></i> Saldo Insuficiente</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="nombreCliente">Nombre del Cliente:</label>
+                <input type="text" id="nombreCliente" placeholder="Ingresa el nombre del cliente">
+            </div>
+            <div class="form-group">
+                <label for="tipoOperacion">Tipo de Operación:</label>
+                <select id="tipoOperacion">
+                    <option value="">Selecciona una operación</option>
+                    <option value="RECARGA DE SALDO MOVILNET">RECARGA DE SALDO MOVILNET</option>
+                    <option value="RECARGA DE SALDO MOVISTAR">RECARGA DE SALDO MOVISTAR</option>
+                    <option value="RECARGA DE SALDO DIGITEL">RECARGA DE SALDO DIGITEL</option>
+                    <option value="COMPRA CUENTA STREAMING">COMPRA CUENTA STREAMING</option>
+                    <option value="RECARGA FREE FIRE">RECARGA FREE FIRE</option>
+                    <option value="COMPRA SERVICIO">COMPRA SERVICIO</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="datosServicio">Datos del Servicio Rechazado:</label>
+                <textarea id="datosServicio" placeholder="Ejemplo: 4143309428 100.00"></textarea>
+                <div class="form-hint">Ingresa número y monto separados por espacio o tabulación</div>
+                <div class="example-text">Formato automático: RECARGA: NÚMERO:4143309428 MONTO: 100.00 BS NO SE PROCESÓ</div>
+            </div>
+            <button id="generateSaldoMsg" class="generate-btn">
+                <i class="fas fa-comment-alt"></i> Generar Mensaje
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Referencias a elementos del DOM
+        const comercialBtn = document.getElementById('comercialBtn');
+        const creadorBtn = document.getElementById('creadorBtn');
+        const promoPanaBtn = document.getElementById('promoPanaBtn');
+        const saldoBtn = document.getElementById('saldoBtn');
+        const messageContainer = document.getElementById('messageContainer');
+        const copyBtn = document.getElementById('copyBtn');
+        const successMessage = document.getElementById('successMessage');
+        const saldoModal = document.getElementById('saldoModal');
+        const closeBtn = document.querySelector('.close-btn');
+        const generateSaldoMsg = document.getElementById('generateSaldoMsg');
+        const nombreCliente = document.getElementById('nombreCliente');
+        const tipoOperacion = document.getElementById('tipoOperacion');
+        const datosServicio = document.getElementById('datosServicio');
+
+        // Función para formatear los datos del servicio
+        function formatearDatosServicio(datos) {
+            // Limpiar espacios extra y separar por espacios o tabs
+            const datosLimpios = datos.trim().replace(/\s+/g, ' ');
+            const partes = datosLimpios.split(' ');
+            
+            if (partes.length >= 2) {
+                const numero = partes[0];
+                const monto = partes[1];
+                return `RECARGA: NÚMERO:${numero} MONTO: ${monto} BS NO SE PROCESÓ`;
+            } else {
+                // Si no tiene el formato esperado, devolver el texto original
+                return datos + ' NO SE PROCESÓ';
+            }
+        }
+
+        // Función para generar el resumen
+        function generarResumen(operacion, datos) {
+            const datosLimpios = datos.trim().replace(/\s+/g, ' ');
+            const partes = datosLimpios.split(' ');
+            
+            if (partes.length >= 1) {
+                const numero = partes[0];
+                // Obtener el nombre de la operación sin "RECARGA DE SALDO"
+                const operacionLimpia = operacion.replace('RECARGA DE SALDO ', '');
+                return `${operacionLimpia} ${numero} RECHAZADA SALDO INSUFICIENTE`;
+            }
+            return `${operacion} RECHAZADA SALDO INSUFICIENTE`;
+        }
+
+        // Evento para el botón Mensaje Comercializar
+        comercialBtn.addEventListener('click', function() {
+            const message = `🔥  *CAMBIO INTELIGENTE!* 
+
+😡🤬🤯 _*¡Dile adiós a los dolores de cabeza con Netflix!*_ 😡🤬🤯
+
+
+ 🔥Estimado/a cliente y socio comercial, Sabemos que las fallas constantes,
+
+ las limitaciones y *las restricciones de Netflix* _*(como el control de dispositivos y los precios crecientes)*_ 
+están afectando tu negocio y la satisfacción de tus clientes. *¡Pero tenemos la solución definitiva!* 
+
+En nuestra búsqueda por ofrecer las *MEJORES ALTERNATIVAS* y los *MEJORES PRECIOS* para ti y tus clientes, hemos creado *TRES COMBOS EXCLUSIVOS* (LOS COMPRAS POR LA PAGINA) que cambiarán las reglas del juego.🥇 _*COMBO ESTRELLA: "NO NETFLIX"*_ 
+
+¡La solución más completa que supera a Netflix en contenido y precio!Con este combo, tus clientes obtienen acceso al mejor entretenimiento, deportes y estrenos:✅ *1 Pantalla DISNEY PLUS* (Incluye Marvel, Star Wars, Pixar y más)✅ TODO el DEPORTE en 7 Canales ESPN+ (La mejor cobertura deportiva)✅ *1 Pantalla AMAZON PRIME VIDEO* (Grandes originales y éxitos de taquilla)✅ *1 Pantalla MAX PREMIUM* (Exclusivos de HBO, Warner Bros y el mejor cine)💰 _¡EL AHORRO ES INCREÍBLE_ ! 
+
+💰Costo Individual Estimado (Precio de Pantalla): 420 Bs (Disney+) + 340 Bs (Prime) + 340 Bs (Max) = *1.100 BsPrecio* Promedio del Mercado (3 Pantallas): Se hizo un sondeo y la pantalla promedio en otros comercios está en $\approx$ 650 Bs, sumando $\approx$ *1.950 Bs*
+
+ .💥 *PRECIO ESPECIAL DE PROMOCIÓN "NO NETFLIX": ¡SOLO 900 Bs!* 💥Tu cliente no solo evita las limitaciones de Netflix, sino que disfruta de *TRES PLATAFORMAS PREMIUM* por un precio que no tiene competencia.
+
+ ¡ _*Más contenido, mejor calidad, menos problemas y un ahorro garantizado!*_ 
+
+¡No dejes que Netflix te detenga! Ofrece lo mejor y más variado del streaming. ¡Tus clientes te lo agradecerán!
+
+*TODO ESTO Y MÁS TE LO OFRECE:✨ VENDE Y GANA ✨Pregúntanos por los otros 2 combos y empieza a ganar más hoy mismo.*`;
+            
+            messageContainer.innerHTML = '<div class="message-header">MENSAJE COMERCIALIZAR</div>' + message;
+            messageContainer.style.display = 'block';
+            copyBtn.style.display = 'block';
+            successMessage.style.display = 'none';
+            
+            // Desplazarse al área del mensaje
+            messageContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Evento para el botón Creador de Mensaje
+        creadorBtn.addEventListener('click', function() {
+            messageContainer.innerHTML = '<div class="message-header">CREADOR DE MENSAJE</div>Función de creador de mensajes personalizados en desarrollo...\n\nPróximamente podrás crear tus propios mensajes comerciales personalizados.';
+            messageContainer.style.display = 'block';
+            copyBtn.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Desplazarse al área del mensaje
+            messageContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Evento para el botón Promo Pana
+        promoPanaBtn.addEventListener('click', function() {
+            const message = `🔥 *¡CAMBIO INTELIGENTE!* 🔥
+
+😡🤬🤯 _*¡Dile adiós a los dolores de cabeza con Netflix!*_ 😡🤬🤯
+
+🔥 _Estimado/a cliente y socio comercial,_
+
+*Sabemos que las fallas constantes, las limitaciones y las restricciones de Netflix* (como el control de dispositivos y los precios crecientes) están afectando tu negocio y la satisfacción de tus clientes. ¡Pero tenemos la solución definitiva!
+
+En nuestra búsqueda por ofrecer las *MEJORES ALTERNATIVAS y los MEJORES PRECIOS* para ti y tus clientes, hemos creado el combo que lo cambia todo *(LO COMPRAS POR LA PÁGINA).*
+
+🥇 COMBO TRANQUILIDAD TOTAL 🥇
+
+¡La solución TODO EN UNO que supera cualquier otra plataforma! Con este combo, tus clientes obtienen acceso al entretenimiento y la productividad sin límites:
+
+✅ *1 Pantalla PANAXSTREAMING TV GO* ¡Todo el contenido en un solo lugar! Disfruta no solo de los estrenos de Netflix, sino también de Disney+, Amazon Prime, Max, Crunchyroll y el acceso a TV EN VIVO con los canales de ESPN, Fox Sport, DirecTV Sport, Noticias y *todos los canales HBO Premium.*
+
+✅ *1 Cuenta YOUTUBE PREMIUM* Para que disfrute de música y videos de alta calidad sin anuncios, con descargas y reproducción en segundo plano.
+
+✅ *1 Cuenta CANVA PRO* La mejor herramienta para que tus clientes (¡o tú!) creen diseños espectaculares para sus redes o negocios.
+
+💰 *¡EL AHORRO ES TOTAL!* 💰
+
+Tu cliente recibe Películas, Series, TV en Vivo, Música Premium y Diseño Profesional... ¡Todo en un solo paquete!
+
+💥 *PRECIO ESPECIAL DE PROMOCIÓN "TRANQUILIDAD TOTAL": ¡SOLO 750 Bs!* 💥
+
+Tu cliente no solo evita las limitaciones de Netflix, sino que disfruta de una solución integral por un precio que no tiene competencia.
+
+¡Más contenido, mejor calidad, menos problemas y un ahorro garantizado!
+
+¡No dejes que Netflix te detenga! Ofrece lo mejor y más variado del streaming y herramientas digitales. ¡Tus clientes te lo agradecerán!
+
+*TODO ESTO Y MÁS TE LO OFRECE: ✨ VENDE Y GANA ✨*
+
+*Pregúntanos por los otros combos y empieza a ganar más hoy mismo.*`;
+            
+            messageContainer.innerHTML = '<div class="message-header">PROMO PANA</div>' + message;
+            messageContainer.style.display = 'block';
+            copyBtn.style.display = 'block';
+            successMessage.style.display = 'none';
+            
+            // Desplazarse al área del mensaje
+            messageContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Evento para abrir el modal de Saldo Insuficiente
+        saldoBtn.addEventListener('click', function() {
+            saldoModal.style.display = 'flex';
+            // Limpiar campos al abrir
+            nombreCliente.value = '';
+            tipoOperacion.selectedIndex = 0;
+            datosServicio.value = '';
+        });
+        
+        // Evento para cerrar el modal
+        closeBtn.addEventListener('click', function() {
+            saldoModal.style.display = 'none';
+        });
+        
+        // Evento para cerrar el modal al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            if (event.target === saldoModal) {
+                saldoModal.style.display = 'none';
+            }
+        });
+        
+        // Evento para generar mensaje de saldo insuficiente
+        generateSaldoMsg.addEventListener('click', function() {
+            const nombre = nombreCliente.value.trim();
+            const operacion = tipoOperacion.value;
+            const datos = datosServicio.value.trim();
+            
+            if (!nombre) {
+                alert('Por favor, ingresa el nombre del cliente');
+                return;
+            }
+            
+            if (!operacion) {
+                alert('Por favor, selecciona el tipo de operación');
+                return;
+            }
+            
+            if (!datos) {
+                alert('Por favor, ingresa los datos del servicio rechazado');
+                return;
+            }
+            
+            // Formatear los datos del servicio
+            const datosFormateados = formatearDatosServicio(datos);
+            
+            // Generar el resumen
+            const resumen = generarResumen(operacion, datos);
+            
+            const message = `Estimado/a ${nombre}, su saldo es insuficiente para procesar la operación solicitada: ${operacion}.
+
+${datosFormateados}
+
+Le invitamos a recargar su cuenta y realizar nuevamente la solicitud.
+
+Atte: VENDE Y GANA`;
+            
+            messageContainer.innerHTML = '<div class="message-header">SALDO INSUFICIENTE</div>' + 
+                                         message + 
+                                         '<div class="rechazada-text">RECHAZADA SALDO INSUFICIENTE</div>' +
+                                         '<div class="resumen-text">' + resumen + '</div>';
+            messageContainer.style.display = 'block';
+            copyBtn.style.display = 'block';
+            successMessage.style.display = 'none';
+            saldoModal.style.display = 'none';
+            
+            // Desplazarse al área del mensaje
+            messageContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // Evento para copiar mensaje
+        copyBtn.addEventListener('click', function() {
+            const message = messageContainer.textContent;
+            
+            // Crear un área de texto temporal
+            const textArea = document.createElement('textarea');
+            textArea.value = message;
+            document.body.appendChild(textArea);
+            
+            // Seleccionar y copiar el texto
+            textArea.select();
+            document.execCommand('copy');
+            
+            // Limpiar
+            document.body.removeChild(textArea);
+            
+            // Mostrar mensaje de éxito
+            successMessage.style.display = 'block';
+            
+            // Ocultar mensaje de éxito después de 3 segundos
+            setTimeout(function() {
+                successMessage.style.display = 'none';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
